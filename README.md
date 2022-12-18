@@ -19,3 +19,9 @@ cmake -S . -B build                     # set up cmake build files with "S"ource
 cmake --build build                     # run build process in build folder
 cp build/WS2812.uf2 /media/pi/RPI-RP2   # hold button, attach to USB, then copy to board
 ```
+
+# Demo application
+See "demo" folder: Roman candle fireworks simulator :-)
+- Adjust "nLEDs" to the length of the used strip (default: 30)
+- Last line in "fragment.hpp: renderGRB()" can be uncommented to reverse direction
+- math.m (Octave, documentation only) calculates the trajectory for a given time step (default: 10 ms / 100 Hz), the "true" continuous-time equivalent and its apex.
