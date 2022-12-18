@@ -14,6 +14,8 @@ The CPU is blocked during the duration of the transmission, which should not be 
 Standard build process, expecting the sdk in /home/pi/pico/pico-sdk (hack warning: hard-coded against recommendations in CMakeFiles.txt. Edit or remove as needed)
 ``` 
 cd WS2812onRpPico
-mkdir build
-cmake -S . -B build
+mkdir build                             # create an empty folder "build"
+cmake -S . -B build                     # set up cmake build files with "S"ource from current folder, "Build" into build folder
+cmake --build build                     # run build process in build folder
+cp build/WS2812.uf2 /media/pi/RPI-RP2   # hold button, attach to USB, then copy to board
 ```
