@@ -97,8 +97,8 @@ int main() {
         if ((frags.size() < 6) && (blockedToTimestamp <= timestamp_ms)) {
             blockedToTimestamp = timestamp_ms + (uint32_t)frand(600.0f, 1700.0f);
             const float pos = 0;
-            const float v0 = frand(1.5f, 2.01f);
-            const float duration = frand(1.4f, 2.3f);
+            const float v0 = frand(1.6f, 2.01f);
+            const float duration = frand(1.4f, 2.2f);
             uint32_t rgb;
             switch (rand() % 7) {
                 case 0:
@@ -111,17 +111,17 @@ int main() {
                     rgb = 0x0000FF;
                     break;
                 case 3:
-                    rgb = 0xAAAA00;
+                    rgb = 0xFFFF00;
                     break;
                 case 4:
-                    rgb = 0x00AAAA;
+                    rgb = 0x00FFFF;
                     break;
                 case 5:
-                    rgb = 0xAA00AA;
+                    rgb = 0xFF00FF;
                     break;
                 case 6:
                 default:
-                    rgb = 0x777777;
+                    rgb = 0xFFFFFF;
                     break;
             }
             frags.emplace(frags.end(), pos, v0, rgb, duration);
