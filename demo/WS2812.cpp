@@ -6,6 +6,7 @@
 #include "hardware/structs/systick.h"
 #include "hardware/sync.h"
 #include "pico/stdlib.h"
+#include "util.hpp"
 using std::vector;
 
 // writes nLEDs RGB values from dataRGB
@@ -59,11 +60,6 @@ void __not_in_flash_func(driveLEDsGPIO0)(uint32_t *dataGRB, uint32_t nLEDs) {
         gpio_put(0, 0);
 }  // while forever
 
-float frand(float minVal, float maxVal) {
-    const float span = maxVal - minVal;
-    return minVal + span * (float)rand() / (float)RAND_MAX;
-}
-
 int main() {
     // === configure GPIO 0 ===
     gpio_init(0);
@@ -73,7 +69,7 @@ int main() {
     gpio_put(0, 0);
 
     // === storage for LED color info ==
-    const uint32_t nLEDs = 30;
+    const uint32_t nLEDs = 144;
     uint32_t LED[nLEDs];
 
     // === main loop ===
@@ -95,10 +91,10 @@ int main() {
 
         // === shoot a Roman Light ===
         if ((frags.size() < 6) && (blockedToTimestamp <= timestamp_ms)) {
-            blockedToTimestamp = timestamp_ms + (uint32_t)frand(600.0f, 1700.0f);
+            blockedToTimestamp = timestamp_ms + (uint32_t)util::frand(600.0f, 1700.0f);
             const float pos = 0;
-            const float v0 = frand(1.6f, 2.01f);
-            const float duration = frand(1.4f, 2.2f);
+            const float v0 = util::frand(1.6f, 2.01f);
+            const float duration = util::frand(1.4f, 2.2f);
             uint32_t rgb;
             switch (rand() % 7) {
                 case 0:
@@ -124,8 +120,17 @@ int main() {
                     rgb = 0xFFFFFF;
                     break;
             }
-            frags.emplace(frags.end(), pos, v0, rgb, duration);
+
+            float explodeAt = 9e9;
+            if (util::frand(0.0f, 1.0f) > 0.9f)
+                explodeAt = util::frand(0.9f, 1.4f);
+            frags.emplace(frags.end(), pos, v0, rgb, duration, explodeAt);
         }
+
+        // === process explosions ===
+        size_t nFragsOrig = frags.size();
+        for (size_t ix = 0; ix < nFragsOrig; ++ix)
+            frags[ix].spawn(frags);  // careful: insertion would invalidate any vector::iterator
 
         // === render fireworks ===
         for (fragment &f : frags) {
