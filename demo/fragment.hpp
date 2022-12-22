@@ -54,7 +54,7 @@ class fragment {
         green = 0xFF;
         blue = 0xFF;
         age = 0.0f;
-        duration = 0.2f;
+        duration = 0.7f;
 
         // === create new fragments ===
         uint32_t nFrags = 3; //0.5f + util::frand(2.0f, 7.0f);
