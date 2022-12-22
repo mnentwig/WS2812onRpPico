@@ -53,12 +53,13 @@ class fragment {
         red = 0xFF;
         green = 0xFF;
         blue = 0xFF;
-        duration = age + 0.1f;
+        age = 0.0f;
+        duration = 0.2f;
 
         // === create new fragments ===
         uint32_t nFrags = 3; //0.5f + util::frand(2.0f, 7.0f);
         for (uint32_t ixFrag = 0; ixFrag < nFrags; ++ixFrag) {
-            const float v0 = util::frand(-0.1f, 2.5f) + velocity;
+            const float v0 = util::frand(-0.1f, 1.5f) + velocity;
             const float duration = util::frand(1.4f, 2.2f);
 #if 0
             uint32_t rgb;

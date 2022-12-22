@@ -74,7 +74,7 @@ int main() {
 
     // === main loop ===
     uint32_t timestamp_ms = to_ms_since_boot(get_absolute_time());
-    const uint32_t frameLength_ms = 10;  // 100 Hz refresh
+    const uint32_t frameLength_ms = 4;  // 250 Hz refresh
     const float frameLength_s = (float)frameLength_ms / 1000.0f;
     const float accel = -2.0f;
     vector<fragment> frags;
@@ -123,7 +123,7 @@ int main() {
 
             float explodeAt = 9e9;
             if (util::frand(0.0f, 1.0f) > 0.9f)
-                explodeAt = util::frand(0.9f, 1.4f);
+                explodeAt = util::frand(0.5f, 1.1f);
             frags.emplace(frags.end(), pos, v0, rgb, duration, explodeAt);
         }
 
