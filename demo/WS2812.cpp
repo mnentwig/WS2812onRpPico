@@ -84,59 +84,39 @@ int main() {
         for (size_t ix = 0; ix < nLEDs; ++ix)
             LED[ix] = 0;
 
-        // === remove expired frags ===
-        frags.erase(
-            std::remove_if(frags.begin(), frags.end(), [](auto frag) { return frag.expired(); }),
-            frags.end());
-
         // === shoot a Roman Light ===
         if ((frags.size() < 6) && (blockedToTimestamp <= timestamp_ms)) {
             blockedToTimestamp = timestamp_ms + (uint32_t)util::frand(600.0f, 1700.0f);
             const float pos = 0;
             const float v0 = util::frand(1.6f, 2.01f);
             const float duration = util::frand(1.4f, 2.2f);
-            uint32_t rgb;
-            switch (rand() % 7) {
-                case 0:
-                    rgb = 0xFF0000;
-                    break;
-                case 1:
-                    rgb = 0x00FF00;
-                    break;
-                case 2:
-                    rgb = 0x0000FF;
-                    break;
-                case 3:
-                    rgb = 0xFFFF00;
-                    break;
-                case 4:
-                    rgb = 0x00FFFF;
-                    break;
-                case 5:
-                    rgb = 0xFF00FF;
-                    break;
-                case 6:
-                default:
-                    rgb = 0xFFFFFF;
-                    break;
-            }
+            uint32_t rgb = fragment::randomRGB();
 
             float explodeAt = 9e9;
             if (util::frand(0.0f, 1.0f) > 0.9f)
-                explodeAt = util::frand(0.5f, 1.1f);
-            frags.emplace(frags.end(), pos, v0, rgb, duration, explodeAt);
+                explodeAt = util::frand(0.4f, 1.0f);
+            frags.emplace(frags.end(), fragment::SHELL, pos, v0, rgb, duration, explodeAt, /*ignite at*/ 0.0);
         }
 
         // === process explosions ===
-        size_t nFragsOrig = frags.size();
+        const size_t nFragsOrig = frags.size();
         for (size_t ix = 0; ix < nFragsOrig; ++ix)
             frags[ix].spawn(frags);  // careful: insertion would invalidate any vector::iterator
 
-        // === render fireworks ===
-        for (fragment &f : frags) {
+        // === advance time ===
+        for (fragment &f : frags)
             f.tick(frameLength_s, accel);
-            f.renderGRB(LED, nLEDs);
-        }
+
+        // === remove expired frags ===
+        frags.erase(
+            std::remove_if(frags.begin(), frags.end(), [](fragment &frag) { return frag.expired(); }),
+            frags.end());
+
+        // === render objects in order of priority ===
+        for (int prio = fragment::EXHAUST; prio <= fragment::EXPLOSION; ++prio)
+            for (fragment &f : frags)
+                if (f.getPrio() == prio)
+                    f.renderGRB(LED, nLEDs);
 
         // === send to hardware ===
         // note: an interrupt would cause bit errors due to the timing sensitive protocol.
